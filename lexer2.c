@@ -1,29 +1,5 @@
 #include "minishell.h"
 
-static int	find_word_boundry(char *line, int start_index,
-				t_quote_state *state);
-static char	*extract_word(char *line, int start_index, int end_index);
-
-t_token build_word(char *line, int start_index, int *end_index)
-{
-    t_quote_state   state;
-    t_token         token;
-    char            *word;
-    
-    token.text = NULL;
-    token.next = NULL;
-    *end_index = find_word_boundry(line, start_index, &state);
-    if (state != STATE_DEFAULT)
-        token.type = TOKEN_ERROR;
-    else
-    {
-        word = extract_word(line, start_index, *end_index);
-        token.type = TOKEN_WORD;
-        token.text = word;
-    }
-    return (token);
-}
-
 static int find_word_boundry(char *line, int start_index, t_quote_state *state)
 {
     t_char_class    character;
@@ -69,6 +45,26 @@ t_token build_operator(char *line, int start_index)
         token.type = TOKEN_HEREDOC;
     else
         token.type = TOKEN_RD_IN;
+    return (token);
+}
+
+t_token build_word(char *line, int start_index, int *end_index)
+{
+    t_quote_state   state;
+    t_token         token;
+    char            *word;
+    
+    token.text = NULL;
+    token.next = NULL;
+    *end_index = find_word_boundry(line, start_index, &state);
+    if (state != STATE_DEFAULT)
+        token.type = TOKEN_ERROR;
+    else
+    {
+        word = extract_word(line, start_index, *end_index);
+        token.type = TOKEN_WORD;
+        token.text = word;
+    }
     return (token);
 }
 

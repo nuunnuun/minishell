@@ -183,7 +183,7 @@ static const char	*type_name(t_token_type type)
 // }
 
 /* ------------------------------------------------------------------ */
-/* TESTER 3 — token list assembly, 10 cases (ACTIVE)                  */
+/* TESTER 3 — token list assembly, 10 cases (PASSED — frozen)         */
 /*                                                                    */
 /* Expected output:                                                   */
 /*   case 0 []            deliver=1  EOF                              */
@@ -196,26 +196,99 @@ static const char	*type_name(t_token_type type)
 /*   case 7 [cat << EOF >> out]  WORD HEREDOC WORD APPEND WORD EOF    */
 /*   case 8 [ls || wc]    deliver=1  PIPE PIPE adjacency = parser job */
 /*   case 9 [   ls   -la   ]  deliver=1  WORD(ls) WORD(-la) EOF       */
-/*                                                                    */
-/* Known pending bug: cases 0 and 1 crash in deliver_token_list       */
-/* because *head is NULL and the EOF node is not made the new head.   */
 /* ------------------------------------------------------------------ */
 
-static void	print_list(t_token *head)
+// static void	print_list(t_token *head)
+// {
+// 	while (head)
+// 	{
+// 		printf("  %s[%s]\n", type_name(head->type), head->text);
+// 		head = head->next;
+// 	}
+// }
+// int	main(void)
+// {
+// 	char	*cases[10];
+// 	t_token	*head;
+// 	int		i;
+// 	int		ok;
+//
+// 	cases[0] = "";
+// 	cases[1] = "   ";
+// 	cases[2] = "ls|wc";
+// 	cases[3] = "echo 'abc";
+// 	cases[4] = "echo \"a | b\"";
+// 	cases[5] = "a\"bc\"d";
+// 	cases[6] = "cat < in > out";
+// 	cases[7] = "cat << EOF >> out";
+// 	cases[8] = "ls || wc";
+// 	cases[9] = "   ls   -la   ";
+// 	i = 0;
+// 	while (i < 10)
+// 	{
+// 		head = build_token_list(cases[i]);
+// 		ok = deliver_token_list(&head, cases[i]);
+// 		printf("case %d [%s] deliver=%d\n", i, cases[i], ok);
+// 		print_list(head);
+// 		free_token_list(&head);
+// 		i++;
+// 	}
+// 	return (0);
+// }
+
+/* ------------------------------------------------------------------ */
+/* TESTER 4 — parser wave 1 chain + grammar gate (ACTIVE)             */
+/*                                                                    */
+/* Expected output:                                                   */
+/*   case 0/1: deliver=1 grammar=0, no boxes (blank line)             */
+/*   case 2: boxes [ls] [wc]; grammar=0                               */
+/*   case 3: deliver=0, no boxes (unclosed quote)                     */
+/*   case 4: box [echo] ["a | b"]                                     */
+/*   case 5: box [a"bc"d]                                             */
+/*   case 6/7: deliver=1 grammar=0, build SKIPPED (wave 2 consumes    */
+/*           redirect tokens; until then build_command hangs on <)    */
+/*   case 8: grammar=1 rejected (PIPE PIPE)                           */
+/*   case 9: box [ls] [-la]                                           */
+/*   case 10-17: reject rows, grammar=1, no boxes:                    */
+/*           | ls   ls |   ls >   ls > < f   ls | > f                 */
+/*           < f    > f | ls   echo a | b | c -> grammar=0            */
+/* ------------------------------------------------------------------ */
+
+static void	print_redirs(t_redirect *redirs)
 {
-	while (head)
+	while (redirs)
 	{
-		printf("  %s[%s]\n", type_name(head->type), head->text);
-		head = head->next;
+		printf("  redir %s target=[%s] fd=%d\n",
+			type_name(redirs->rd_type), redirs->target, redirs->fd);
+		redirs = redirs->next;
+	}
+}
+
+static void	print_commands(t_command *cmds)
+{
+	int	i;
+
+	while (cmds)
+	{
+		i = 0;
+		while (cmds->argv[i])
+		{
+			printf(" [%s]", cmds->argv[i]);
+			i++;
+		}
+		printf("\n");
+		print_redirs(cmds->redirs);
+		cmds = cmds->next;
 	}
 }
 
 int	main(void)
 {
-	char	*cases[10];
-	t_token	*head;
-	int		i;
-	int		ok;
+	char		*cases[20];
+	t_token		*head;
+	t_command	*cmds;
+	int			i;
+	int			ok;
 
 	cases[0] = "";
 	cases[1] = "   ";
@@ -227,13 +300,32 @@ int	main(void)
 	cases[7] = "cat << EOF >> out";
 	cases[8] = "ls || wc";
 	cases[9] = "   ls   -la   ";
+	cases[10] = "| ls";
+	cases[11] = "ls |";
+	cases[12] = "ls >";
+	cases[13] = "ls > < f";
+	cases[14] = "ls | > f";
+	cases[15] = "< f";
+	cases[16] = "> f | ls";
+	cases[17] = "echo a | b | c";
+	cases[18] = "ls < in > out";
+	cases[19] = "echo x > f1 > f2";
 	i = 0;
-	while (i < 10)
+	while (i < 20)
 	{
 		head = build_token_list(cases[i]);
 		ok = deliver_token_list(&head, cases[i]);
 		printf("case %d [%s] deliver=%d\n", i, cases[i], ok);
-		print_list(head);
+		cmds = NULL;
+		if (ok)
+		{
+			ok = check_grammar(head);
+			printf("  grammar=%d\n", ok);
+			if (ok == 0)
+				cmds = build_command_list(head);
+		}
+		print_commands(cmds);
+		free_command_list(cmds);
 		free_token_list(&head);
 		i++;
 	}
