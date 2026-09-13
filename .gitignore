@@ -53,3 +53,11 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# build scratch dir
+tmp/
+
+# local AI working notes
+minishell_code/AGENTS.md
+test_lexer3
+.DS_Store
