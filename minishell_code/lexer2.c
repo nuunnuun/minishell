@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int find_word_boundry(char *line, int start_index, t_quote_state *state)
+static int find_word_boundry(const char *line, int start_index, t_quote_state *state)
 {
     t_char_class    character;
     t_quote_state   current_state;
@@ -19,7 +19,7 @@ static int find_word_boundry(char *line, int start_index, t_quote_state *state)
     return (start_index - 1);
 }
 
-static char *extract_word(char *line, int start_index, int end_index)
+static char *extract_word(const char *line, int start_index, int end_index)
 {
     int len;
     char *word;
@@ -29,7 +29,7 @@ static char *extract_word(char *line, int start_index, int end_index)
     return (word);
 }
 
-t_token build_operator(char *line, int start_index)
+t_token build_operator(const char *line, int start_index)
 {
     t_token token;
 
@@ -48,7 +48,7 @@ t_token build_operator(char *line, int start_index)
     return (token);
 }
 
-t_token build_word(char *line, int start_index, int *end_index)
+t_token build_word(const char *line, int start_index, int *end_index)
 {
     t_quote_state   state;
     t_token         token;

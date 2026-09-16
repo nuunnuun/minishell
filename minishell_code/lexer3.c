@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int add_word_token(t_token **head, char *line, int *start_index)
+static int add_word_token(t_token **head, const char *line, int *start_index)
 {
     int end_index;
     t_token token;
@@ -23,7 +23,7 @@ static int add_word_token(t_token **head, char *line, int *start_index)
     return (1);
 }
 
-static int add_operator_token(t_token **head, char *line, int *start_index)
+static int add_operator_token(t_token **head, const char *line, int *start_index)
 {
     t_token token;
 
@@ -37,7 +37,7 @@ static int add_operator_token(t_token **head, char *line, int *start_index)
     return (1);
 }
 
-int empty_line_check(char *line)
+int empty_line_check(const char *line)
 {
     int i;
 
@@ -51,7 +51,7 @@ int empty_line_check(char *line)
     return (0);
 }
 
-int    deliver_token_list(t_token **head, char *line)
+int    deliver_token_list(t_token **head, const char *line)
 {
     t_token *eof_token;
 
@@ -69,7 +69,7 @@ int    deliver_token_list(t_token **head, char *line)
     return (0);
 }
 
-t_token *build_token_list(char *line)
+t_token *build_token_list(const char *line)
 {
     int start_index;
     t_token *head;

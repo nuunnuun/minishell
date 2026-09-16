@@ -7,7 +7,7 @@
 CC       = cc
 CFLAGS   = -Wall -Wextra -Werror
 
-LIB_SRCS = lexer.c lexer2.c lexer3.c lexer4.c parser.c parser2.c parser3.c grammar.c\
+LIB_SRCS = lexer.c lexer2.c lexer3.c lexer4.c parser.c parser2.c parser3.c parser4.c grammar.c\
 	helpers/utils_chars.c \
 	helpers/utils_numbers.c \
 	helpers/utils_split.c \

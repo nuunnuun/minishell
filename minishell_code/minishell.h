@@ -62,17 +62,17 @@ typedef struct s_command
 
 t_char_class    classify_char(char c, t_quote_state state);
 t_quote_state   set_state(char c, t_quote_state state);
-t_token         build_word(char *line, int start_index, int *end_index);
-t_token         build_operator(char *line, int start_index);
-t_token	        *build_token_list(char *line);
+t_token         build_word(const char *line, int start_index, int *end_index);
+t_token         build_operator(const char *line, int start_index);
+t_token	        *build_token_list(const char *line);
 t_token         *add_token(t_token **head, t_token new_token);
 void            deliver_token_list_helper(t_token **head, t_token *eof_token);
 void	        free_token_list(t_token **head);
 int             is_operator(char c);
 int             is_whitespace(char c);
 int             operator_len(t_token_type type);
-int	            empty_line_check(char *line);
-int             deliver_token_list(t_token **head, char *line);
+int	            empty_line_check(const char *line);
+int             deliver_token_list(t_token **head, const char *line);
 
 /* functions parser */
 
@@ -84,6 +84,7 @@ void            build_pipe(t_command *command, t_token **current);
 int             build_redirect_or_argv(t_command *command, t_token **current, int *i);
 int             add_redirect(t_command *command, t_token_type redirect_type, t_token *target);
 int             is_redirect_type(t_token_type type);
+t_command       *parse(const char *line, int *status);
 
 /*functions grammar*/
 
