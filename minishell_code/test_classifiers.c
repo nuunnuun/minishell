@@ -237,21 +237,23 @@ static const char	*type_name(t_token_type type)
 // }
 
 /* ------------------------------------------------------------------ */
-/* TESTER 4 — parser wave 1 chain + grammar gate (ACTIVE)             */
+/* TESTER 4 — full pipeline through parse() (ACTIVE)                  */
 /*                                                                    */
-/* Expected output:                                                   */
-/*   case 0/1: deliver=1 grammar=0, no boxes (blank line)             */
-/*   case 2: boxes [ls] [wc]; grammar=0                               */
-/*   case 3: deliver=0, no boxes (unclosed quote)                     */
-/*   case 4: box [echo] ["a | b"]                                     */
-/*   case 5: box [a"bc"d]                                             */
-/*   case 6/7: deliver=1 grammar=0, build SKIPPED (wave 2 consumes    */
-/*           redirect tokens; until then build_command hangs on <)    */
-/*   case 8: grammar=1 rejected (PIPE PIPE)                           */
-/*   case 9: box [ls] [-la]                                           */
-/*   case 10-17: reject rows, grammar=1, no boxes:                    */
-/*           | ls   ls |   ls >   ls > < f   ls | > f                 */
-/*           < f    > f | ls   echo a | b | c -> grammar=0            */
+/* Expected output (status = parse verdict: 0 ok/blank, 1 malloc,     */
+/* 2 syntax):                                                         */
+/*   case 0/1: status=0, no boxes (blank line)                        */
+/*   case 2: status=0, boxes [ls] [wc]                                */
+/*   case 3: status=2, no boxes (unclosed quote)                      */
+/*   case 4: status=0, box [echo] ["a | b"]                           */
+/*   case 5: status=0, box [a"bc"d]                                   */
+/*   case 6: status=0, box [cat] + RD_IN[in] RD_OUT[out]              */
+/*   case 7: status=0, box [cat] + HEREDOC[EOF] APPEND[out]           */
+/*   case 8: status=2, no boxes (PIPE PIPE)                           */
+/*   case 9: status=0, box [ls] [-la]                                 */
+/*   case 10-16: status=2, no boxes (reject rows)                     */
+/*   case 17: status=0, boxes [echo][a] [b] [c]                       */
+/*   case 18: status=0, box [ls] + RD_IN[in] RD_OUT[out]              */
+/*   case 19: status=0, box [echo][x] + RD_OUT[f1] RD_OUT[f2]         */
 /* ------------------------------------------------------------------ */
 
 static void	print_redirs(t_redirect *redirs)
@@ -285,10 +287,9 @@ static void	print_commands(t_command *cmds)
 int	main(void)
 {
 	char		*cases[20];
-	t_token		*head;
-	t_command	*cmds;
+	t_command	*boxes;
+	int			status;
 	int			i;
-	int			ok;
 
 	cases[0] = "";
 	cases[1] = "   ";
@@ -313,20 +314,10 @@ int	main(void)
 	i = 0;
 	while (i < 20)
 	{
-		head = build_token_list(cases[i]);
-		ok = deliver_token_list(&head, cases[i]);
-		printf("case %d [%s] deliver=%d\n", i, cases[i], ok);
-		cmds = NULL;
-		if (ok)
-		{
-			ok = check_grammar(head);
-			printf("  grammar=%d\n", ok);
-			if (ok == 0)
-				cmds = build_command_list(head);
-		}
-		print_commands(cmds);
-		free_command_list(cmds);
-		free_token_list(&head);
+		boxes = parse(cases[i], &status);
+		printf("case %d [%s] status=%d\n", i, cases[i], status);
+		print_commands(boxes);
+		free_command_list(boxes);
 		i++;
 	}
 	return (0);
