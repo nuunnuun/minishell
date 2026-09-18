@@ -56,3 +56,23 @@ dkms.conf
 
 # Minishell executable
 /minishell
+
+# build scratch dir
+tmp/
+
+# local AI working notes
+minishell_code/AGENTS.md
+test_lexer3
+.DS_Store
+
+# local-only notes and personal files
+*.pdf
+*.html
+*.md
+!README.md
+app/
+quiz_data/
+tools/
+C_level
+human_bash.sh
+evaluation_guidelines.md
