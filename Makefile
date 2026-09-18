@@ -13,7 +13,8 @@ LIBFT_SRC = $(wildcard $(LIBFT_DIR)/*.c) \
 			$(LIBFT_DIR)/libft.h \
 			$(LIBFT_DIR)/Makefile
 
-SRCS = src/main.c
+SRCS = src/main.c \
+       src/environment.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
