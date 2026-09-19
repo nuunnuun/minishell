@@ -14,7 +14,20 @@ LIBFT_SRC = $(wildcard $(LIBFT_DIR)/*.c) \
 			$(LIBFT_DIR)/Makefile
 
 SRCS = src/main.c \
-       src/environment.c
+       src/environment.c \
+       src/environment_update.c \
+       src/environment_unset.c \
+       src/builtins/builtin_echo.c \
+       src/builtins/builtin_dispatch.c \
+       src/builtins/builtin_pwd.c \
+       src/builtins/builtin_env.c \
+       src/builtins/builtin_identifier.c \
+       src/builtins/builtin_unset.c \
+       src/builtins/builtin_cd.c \
+       src/builtins/builtin_export.c \
+       src/builtins/builtin_export_print.c \
+       src/builtins/builtin_exit.c
+
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

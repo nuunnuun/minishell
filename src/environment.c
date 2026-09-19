@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 17:46:03 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/18 17:46:14 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:31:31 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char	**env_copy(char **envp)
 	char	**copy;
 	size_t	i;
 
-	copy = malloc((env_count(envp) + 1) * sizeof(char *));
+	copy = ft_calloc(env_count(envp) + 1, sizeof(char *));
 	if (!copy)
 		return (NULL);
 	i = 0;

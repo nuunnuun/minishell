@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/07 22:06:15 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/18 17:47:02 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:58:44 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ int	main(int argc, char **argv, char **envp)
 	if (!shell.env)
 		return (1);
 	shell.last_status = 0;
-	while (1)
+	shell.should_exit = 0;
+	shell.exit_status = 0;
+	while (!shell.should_exit)
 	{
 		line = readline("minishell$ ");
 		if (!line)
@@ -33,5 +35,7 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 	}
 	env_free(shell.env);
+	if (shell.should_exit)
+		return (shell.exit_status);
 	return (shell.last_status);
 }
