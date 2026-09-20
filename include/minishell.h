@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/07 22:06:03 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/19 16:57:27 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/21 00:45:05 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <stdlib.h>
 # include "libft.h"
 # include <unistd.h>
+# include <errno.h>
+# include <stdio.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
 
 typedef struct s_shell
 {
@@ -44,5 +48,10 @@ int		env_set(t_shell *shell, char *name, char *value);
 void	env_unset(t_shell *shell, char *name);
 int		is_valid_env_name(char *name);
 int		print_export(char **env);
+char	*resolve_command_path(t_shell *shell, char *command);
+int		execute_external(t_shell *shell, char **argv);
+int		executor_wait_child(pid_t pid);
+void	executor_run_child(t_shell *shell, char **argv, char *path);
+int		execute_command(t_shell *shell, char **argv);
 
 #endif

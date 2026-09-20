@@ -16,6 +16,10 @@ LIBFT_SRC = $(wildcard $(LIBFT_DIR)/*.c) \
 SRCS = src/main.c \
        src/environment.c \
        src/environment_update.c \
+       src/executor_path.c \
+       src/executor.c \
+       src/executor_child.c \
+       src/executor_dispatch.c \
        src/environment_unset.c \
        src/builtins/builtin_echo.c \
        src/builtins/builtin_dispatch.c \
