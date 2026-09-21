@@ -20,6 +20,11 @@ SRCS = src/main.c \
        src/executor.c \
        src/executor_child.c \
        src/executor_dispatch.c \
+       src/executor_builtin_redir.c \
+       src/executor_commands.c \
+       src/redirection.c \
+       src/pipeline.c \
+       src/pipeline_child.c \
        src/environment_unset.c \
        src/builtins/builtin_echo.c \
        src/builtins/builtin_dispatch.c \
