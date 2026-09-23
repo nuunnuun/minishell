@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 20:30:00 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/21 18:23:47 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/23 18:49:15 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ static void	run_child_command(t_shell *shell, t_exec_cmd *command)
 void	pipeline_run_child(t_shell *shell, t_exec_cmd *command,
 		int input_fd, int pipe_fd[2])
 {
+	signals_child_default();
 	if (input_fd != -1
 		&& dup2(input_fd, STDIN_FILENO) == -1)
 		exit_pipeline_child(shell, 1);

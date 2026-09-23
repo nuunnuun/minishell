@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/20 00:00:00 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/21 00:40:18 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/23 18:43:12 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,17 @@ int	execute_external(t_shell *shell, char **argv)
 		return (command_not_found(shell, argv[0]));
 	if (is_directory(path))
 		return (directory_error(shell, path));
+	signals_parent_wait();
 	pid = fork();
 	if (pid == -1)
+	{
+		signals_prompt();
 		return (fork_failed(shell, path));
+	}
 	if (pid == 0)
 		executor_run_child(shell, argv, path);
 	free(path);
 	shell->last_status = executor_wait_child(pid);
+	signals_prompt();
 	return (shell->last_status);
 }

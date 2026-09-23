@@ -6,13 +6,14 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/07 22:06:03 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/21 18:24:56 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/23 18:42:22 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <stdio.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <stdlib.h>
@@ -20,9 +21,9 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <errno.h>
-# include <stdio.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
+# include <signal.h>
 
 typedef enum e_redir_type
 {
@@ -88,5 +89,9 @@ int		execute_pipeline(t_shell *shell, t_exec_cmd *command);
 int		execute_commands(t_shell *shell, t_exec_cmd *command);
 void	pipeline_run_child(t_shell *shell, t_exec_cmd *command,
 			int input_fd, int pipe_fd[2]);
+extern volatile sig_atomic_t	g_signal;
+void	signals_prompt(void);
+void	signals_parent_wait(void);
+void	signals_child_default(void);
 
 #endif

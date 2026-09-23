@@ -6,7 +6,7 @@
 /*   By: kraksana <kraksana@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 18:30:00 by kraksana          #+#    #+#             */
-/*   Updated: 2026/09/21 18:22:38 by kraksana         ###   ########.fr       */
+/*   Updated: 2026/09/23 18:44:47 by kraksana         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,13 @@ int	execute_pipeline(t_shell *shell, t_exec_cmd *command)
 	pipeline.input_fd = -1;
 	pipeline.last_pid = -1;
 	pipeline.child_count = 0;
+	signals_parent_wait();
 	while (command)
 	{
 		if (launch_command(shell, command, &pipeline) != 0)
 		{
 			wait_previous_children(pipeline.child_count + 1);
+			signals_prompt();
 			shell->last_status = 1;
 			return (1);
 		}
@@ -90,5 +92,6 @@ int	execute_pipeline(t_shell *shell, t_exec_cmd *command)
 	}
 	shell->last_status = executor_wait_child(pipeline.last_pid);
 	wait_previous_children(pipeline.child_count);
+	signals_prompt();
 	return (shell->last_status);
 }
